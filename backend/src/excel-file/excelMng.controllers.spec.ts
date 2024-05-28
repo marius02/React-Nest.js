@@ -1,28 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UploadController } from './upload.controller';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ExcelMngController } from './excelMngt.controller';
 
-describe('UploadController', () => {
+describe('ExcelMngController', () => {
   let app: INestApplication;
-  let uploadController: UploadController;
+  let excelMngController: ExcelMngController;
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      controllers: [UploadController],
+      controllers: [ExcelMngController],
     }).compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
-    uploadController = moduleRef.get<UploadController>(UploadController);
+    excelMngController = moduleRef.get<ExcelMngController>(ExcelMngController);
   });
 
   it('should upload a file successfully', async () => {
     const filePath = path.join(__dirname, 'test-files', 'test.txt');
     const response = await request(app.getHttpServer())
-      .post('/upload')
+      .post('/excelMng/upload')
       .attach('file', filePath);
 
     expect(response.status).toBe(201);
