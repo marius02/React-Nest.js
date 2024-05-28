@@ -1,4 +1,4 @@
-const serverURL = process.env.BACKEND_URL;
+const serverURL = import.meta.env.VITE_BACKEND_URL;
 
 export type FetchParam = {
   fileId: string;
