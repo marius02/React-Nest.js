@@ -46,13 +46,13 @@ const ViewPage = () => {
     setSearchVal(e.target.value)
   }
 
-  const handleChangePage = (_, newPage: number) => {
+  const handleChangePage = (_: ChangeEvent<unknown>, newPage: number) => {
     dispatch(setPage(newPage))
   }
 
   return (
     <Box>
-      
+
       <Box
         marginBottom={4}
         sx={{ display: "flex", justifyContent: "space-between" }}

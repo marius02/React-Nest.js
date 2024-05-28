@@ -26,7 +26,8 @@ const UploadPage = () => {
         navigate('/view/' + res.filename)
         setLoading(false)
       })
-      .catch(e => {
+      .catch((e) => {
+        console.log(e)
         setLoading(false)
       })
 
@@ -37,11 +38,23 @@ const UploadPage = () => {
   })
 
   return (
-    <div {...getRootProps()} onClick={e => e.stopPropagation()}>
-      <input {...getInputProps()} type="file" className="border rounded-md" />
-      <Button onClick={open} disabled={loading} variant="outlined">
+    <div
+      {...getRootProps()}
+      onClick={e => e.stopPropagation()}
+    >
+      <input
+        {...getInputProps()}
+        type="file"
+        className="border rounded-md"
+      />
+      <Button onClick={open} disabled={loading} variant="outlined" >
         {
-          loading ? (<Stack alignItems={'center'} gap={2}><ClipLoader size={16} color="white" /> Uploading</Stack>) : "Upload a Excel file"
+          loading ? (
+            <Stack alignItems={'center'} gap={2}>
+              <ClipLoader size={16} color="white" /> Uploading
+            </Stack>
+          )
+            : "Upload a Excel file"
         }
       </Button>
       <Typography>{fileName || error}</Typography>
