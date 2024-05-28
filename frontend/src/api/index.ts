@@ -12,7 +12,7 @@ export const uploadFileToServer = async (file: File): Promise<any> => {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch(`${serverURL}/upload`, {
+  const response = await fetch(`${serverURL}/excelMng/upload`, {
     method: 'POST',
     body: formData,
   });
@@ -25,7 +25,7 @@ export const uploadFileToServer = async (file: File): Promise<any> => {
 };
 
 export const readData = async(params: FetchParam) => {
-  const url = new URL(`${serverURL}/data`);
+  const url = new URL(`${serverURL}/excelMng/readData`);
   url.search = new URLSearchParams(params as Record<string, any>).toString();
 
   const response = await fetch(url.toString(), {

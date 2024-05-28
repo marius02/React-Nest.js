@@ -1,16 +1,18 @@
 import { useDropzone } from "react-dropzone"
 import { useState } from "react"
-import { isValidExcelFile } from "../lib/utils";
-import { ClipLoader } from "react-spinners";
-import { uploadFileToServer } from "../api";
+import { isValidExcelFile } from "../lib/utils"
+import { ClipLoader } from "react-spinners"
+import { uploadFileToServer } from "../api"
+import { useNavigate } from 'react-router-dom'
+import { Button, Typography, Stack } from "@mui/material"
 
 const UploadPage = () => {
-  const [fileName, setFileName] = useState<string>("");
-  const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string>("")
+  const [error, setError] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
+  const navigate = useNavigate()
 
   const handleUploadChange = (files: any) => {
-    console.log(files, 'files')
     const file = files[0]
     if (!isValidExcelFile(file.name)) {
       setError("Invalid Excel file")
@@ -21,12 +23,11 @@ const UploadPage = () => {
     setFileName(files[0].name)
     uploadFileToServer(file)
       .then((res) => {
-        console.log("file upload result:", res)
+        navigate('/view/' + res.filename)
         setLoading(false)
       })
       .catch(e => {
         setLoading(false)
-        console.log(e, 'error')
       })
 
   }
@@ -38,12 +39,12 @@ const UploadPage = () => {
   return (
     <div {...getRootProps()} onClick={e => e.stopPropagation()}>
       <input {...getInputProps()} type="file" className="border rounded-md" />
-      <button onClick={open} disabled={loading}>
+      <Button onClick={open} disabled={loading} variant="outlined">
         {
-          loading ? (<div className="flex items-center gap-2"><ClipLoader size={16} color="white" /> Uploading</div>) : "Upload a Excel file"
+          loading ? (<Stack alignItems={'center'} gap={2}><ClipLoader size={16} color="white" /> Uploading</Stack>) : "Upload a Excel file"
         }
-      </button>
-      <p>{fileName || error}</p>
+      </Button>
+      <Typography>{fileName || error}</Typography>
     </div>
   )
 }

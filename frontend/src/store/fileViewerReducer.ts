@@ -3,12 +3,13 @@ import { RootState } from './index';
 
 interface fileViwerState {
   id: string | null;
-  data: Record<string, string>[];
+  data: Record<string, any>[];
   page: number;
   count: number;
   sort: number;
   sortIndex: number;
   searchText: string;
+  totalCount: number;
 }
 
 const initialState: fileViwerState = {
@@ -19,6 +20,7 @@ const initialState: fileViwerState = {
   sort: 1,
   sortIndex: 0,
   searchText: "",
+  totalCount: 10,
 };
 
 const fileViewerSlice = createSlice({
@@ -46,6 +48,10 @@ const fileViewerSlice = createSlice({
     setSortIndexDirection: (state, action: PayloadAction<number>) => {
       state.sortIndex = action.payload;
     },
+    setTotalCount: (state, action: PayloadAction<number>) => {
+      state.totalCount = action.payload;
+    },
+
   },
 });
 
@@ -56,7 +62,8 @@ export const {
   setSearchText,
   setData,
   setSortDirection,
-  setSortIndexDirection
+  setSortIndexDirection,
+  setTotalCount
 } = fileViewerSlice.actions;
 
 export const selectedData = (state: RootState) => state.fileViewer.data;

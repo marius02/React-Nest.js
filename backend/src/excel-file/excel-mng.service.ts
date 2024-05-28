@@ -4,60 +4,59 @@ import * as ExcelJS from 'exceljs';
 
 @Injectable()
 export class ExcelMngService {
-  async readExcelFile(fileName: string): Promise<Record<string, any>[]> {
-    const filePath = path.join('storage', fileName);
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(filePath);
+    async readExcelFile(fileName: string): Promise<{ data: Record<string, any>[], maxCols: number }> {
+        const filePath = path.join('storage', fileName);
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(filePath);
 
-    const worksheet = workbook.worksheets[0];
-    const jsonData = [];
+        const worksheet = workbook.worksheets[0];
+        const jsonData = [];
+        let maxColNumber = 0;
 
-    worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber === 1) {
-        // Skip the header row if you have headers
-        return;
-      }
-      const rowData = {};
-      row.eachCell((cell, colNumber) => {
-        rowData[`col${colNumber}`] = cell.value;
-      });
-      jsonData.push(rowData);
-    });
+        worksheet.eachRow((row, rowNumber) => {
+            const rowData = {};
+            row.eachCell((cell, colNumber) => {
+                if (colNumber > maxColNumber) maxColNumber = colNumber;
+                rowData[`col${colNumber}`] = cell.value;
+            });
+            jsonData.push(rowData);
+        });
 
-    return jsonData;
-  }
-
-  async getData(id: string, page: number, count: number, sort: number, sortIndex: number, searchText: string) {
-    const jsonData = await this.readExcelFile(id);
-
-    // Implement pagination, sorting, and searching logic here
-    let filteredData = jsonData;
-
-    if (searchText) {
-      filteredData = filteredData.filter(item =>
-        Object.values(item).some(value =>
-          value.toString().toLowerCase().includes(searchText.toLowerCase()),
-        ),
-      );
+        return { data: jsonData, maxCols: maxColNumber };
     }
 
-    if (sort !== undefined && sortIndex !== undefined) {
-      filteredData.sort((a, b) => {
-        const aValue = Object.values(a)[sortIndex];
-        const bValue = Object.values(b)[sortIndex];
-        if (aValue < bValue) return sort === 1 ? -1 : 1;
-        if (aValue > bValue) return sort === 1 ? 1 : -1;
-        return 0;
-      });
-    }
+    async getData(id: string, page: number, count: number, sort: number, sortIndex: number, searchText: string) {
+        const { data: jsonData, maxCols } = await this.readExcelFile(id);
 
-    const start = (page - 1) * count;
-    const end = start + count;
-    const paginatedData = filteredData.slice(start, end);
+        // Implement pagination, sorting, and searching logic here
+        let filteredData = jsonData;
 
-    return {
-      data: paginatedData,
-      total: filteredData.length,
+        if (searchText) {
+            filteredData = filteredData.filter(item =>
+                Object.values(item).some(value =>
+                    value.toString().toLowerCase().includes(searchText.toLowerCase()),
+                ),
+            );
+        }
+
+        if (sort !== undefined && sortIndex !== undefined) {
+            filteredData.sort((a, b) => {
+                const aValue = Object.values(a)["col" + sortIndex];
+                const bValue = Object.values(b)["col" + sortIndex];
+                if (aValue < bValue) return sort === 1 ? -1 : 1;
+                if (aValue > bValue) return sort === 1 ? 1 : -1;
+                return 0;
+            });
+        }
+
+        const start = (page - 1) * count;
+        const end = Number(start) + Number(count);
+        const paginatedData = filteredData.slice(start, end);
+
+        return {
+            data: paginatedData,
+            total: filteredData.length,
+            maxCols: maxCols
     };
-  }
+    }
 }
